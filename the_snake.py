@@ -57,9 +57,9 @@ class GameObject:
             f'Определите draw в {self.__class__.__name__}.'
         )
 
-    def draw_cell(self):
+    def draw_cell(self, position):
         """Отрисовка ячейки"""
-        rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
+        rect = pygame.Rect(position, (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(screen, self.body_color, rect)
         pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
@@ -79,15 +79,13 @@ class Apple(GameObject):
         атрибуту position новое значение. Координаты выбираются так, чтобы
         яблоко оказалось в пределах игрового поля.
         """
-        self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
-                         randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
         while self.position in positions:
             self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
                              randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
 
     def draw(self):
         """Отрисовывает яблоко на игровой поверхности."""
-        self.draw_cell()
+        self.draw_cell(self.position)
 
 
 class Snake(GameObject):
@@ -100,21 +98,21 @@ class Snake(GameObject):
         super().__init__(SNAKE_COLOR)
         self.reset()
 
-    def update_direction(self, next_direcion):
+    def update_direction(self, next_direction):
         """Обновляет направление движения змейки"""
-        if self.next_direction:
-            self.direction = self.next_direction
+        if next_direction:
+            self.direction = next_direction
 
     def move(self):
         """Обновляет позицию змейки (координаты каждой секции),
         добавляя новую голову в начало списка positions и удаляя
         последний элемент, если длина змейки не увеличилась.
         """
-        x_pos, y_pos = self.get_head_position()
-
-        x_pos = (x_pos + self.direction[0] * GRID_SIZE) % SCREEN_WIDTH
-        y_pos = (y_pos + self.direction[1] * GRID_SIZE) % SCREEN_HEIGHT
-        self.positions.insert(0, (x_pos, y_pos))
+        head_x_position, head_y_position = self.get_head_position()
+        x, y = self.direction
+        head_x_position = (head_x_position + x * GRID_SIZE) % SCREEN_WIDTH
+        head_y_position = (head_y_position + y * GRID_SIZE) % SCREEN_HEIGHT
+        self.positions.insert(0, (head_x_position, head_y_position))
 
         if len(self.positions) > self.length:
             self.last = self.positions.pop()
