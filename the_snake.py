@@ -108,11 +108,11 @@ class Snake(GameObject):
         добавляя новую голову в начало списка positions и удаляя
         последний элемент, если длина змейки не увеличилась.
         """
-        head_x_position, head_y_position = self.get_head_position()
-        x, y = self.direction
-        head_x_position = (head_x_position + x * GRID_SIZE) % SCREEN_WIDTH
-        head_y_position = (head_y_position + y * GRID_SIZE) % SCREEN_HEIGHT
-        self.positions.insert(0, (head_x_position, head_y_position))
+        head_x, head_y = self.get_head_position()
+        x_position, y_position = self.direction
+        head_x = (head_x + x_position * GRID_SIZE) % SCREEN_WIDTH
+        head_y = (head_y + y_position * GRID_SIZE) % SCREEN_HEIGHT
+        self.positions.insert(0, (head_x, head_y))
 
         if len(self.positions) > self.length:
             self.last = self.positions.pop()
@@ -121,11 +121,6 @@ class Snake(GameObject):
 
     def draw(self):
         """Отрисовывает змейку на экране, затирая след"""
-        for position in self.positions[:-1]:
-            rect = pygame.Rect(position, (GRID_SIZE, GRID_SIZE))
-            pygame.draw.rect(screen, SNAKE_COLOR, rect)
-            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
-
         # Отрисовка головы змейки
         head_rect = pygame.Rect(self.get_head_position(),
                                 (GRID_SIZE, GRID_SIZE))
@@ -179,7 +174,6 @@ def main():
     apple = Apple(snake.positions)
     while True:
         clock.tick(SPEED)
-        screen.fill(BOARD_BACKGROUND_COLOR)
         apple.draw()
         snake.draw()
         handle_keys(snake)
@@ -189,6 +183,7 @@ def main():
             snake.length += 1
             apple.randomize_position(snake.positions)
         if snake.get_head_position() in snake.positions[1:]:
+            screen.fill(BOARD_BACKGROUND_COLOR)
             snake.reset()
         pygame.display.update()
 
